@@ -17,8 +17,10 @@ export const paths = [
   ...progressionCatalog.entries.map(entry=>"/wiki/"+entry.slug)
 ];
 
+export const canonicalPath=(path:string)=>path.replace(/(?:\/index\.html|\.html|\/)$/,"")||"/";
+
 function route(path:string) {
-  const [page="accueil",slug=""]=path.split("/").filter(Boolean);
+  const [page="accueil",slug=""]=canonicalPath(path).split("/").filter(Boolean);
   return {page,slug};
 }
 
@@ -31,7 +33,7 @@ export function getMetadata(path:string) {
 }
 
 export function PublicSite({path,query={}}:{path:string;query?:Record<string,string>}) {
-  const canonical=path.replace(/\/$/,"")||"/";
+  const canonical=canonicalPath(path);
   if (!paths.includes(canonical)) return <main className="shell interior"><h1>Page introuvable</h1><p><a className="inline-link" href="/">Retour à l’accueil</a></p></main>;
   const {page,slug}=route(canonical);
   const catalog=query.revision===initial.id ? initial : progressionCatalog;

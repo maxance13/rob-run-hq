@@ -21,11 +21,14 @@ try {
     const metadata=getMetadata(path);
     const html=template
       .replace("<title>ROB RUN HQ</title>",()=>`<title>${escapeHtml(metadata.title)}</title>\n    <meta name="description" content="${escapeHtml(metadata.description)}">`)
-      .replace('<div id="root"></div>',()=>`<div id="root">${render(path)}</div>`);
+      .replace('<div id="root"></div>',()=>`<div id="root" data-path="${escapeHtml(path)}">${render(path)}</div>`);
     await mkdir(dirname(file),{recursive:true});
     await writeFile(file,html);
   }
-  await Promise.all([...paths.map(path=>writePage(path,join(output,path.slice(1),"index.html"))),writePage("/404",join(output,"404.html"))]);
+  await Promise.all([...paths.flatMap(path=>[
+    writePage(path,join(output,path.slice(1),"index.html")),
+    ...(path==="/"?[]:[writePage(path,join(output,path.slice(1)+".html"))])
+  ]),writePage("/404",join(output,"404.html"))]);
   console.log(`${paths.length} routes statiques dans dist/render.`);
 } finally {
   await rm(temporary,{recursive:true,force:true});
