@@ -20,4 +20,6 @@ Le corpus initial utilise des sources publiques communautaires. La version exact
 
 Créer un service **Static Site** depuis la branche `main`. Utiliser Node.js 24, la commande `npm ci --include=dev && npm run build:render` et le dossier de publication `dist/render`. Le build génère les pages et les fiches wiki en HTML avec le catalogue versionné du dépôt. Les filtres, calculateurs et liens de simulation restent interactifs.
 
+Pour générer les URL canoniques, les données structurées et `sitemap.xml`, définir `SEO_SITE_URL` avec l’origine HTTPS publique exacte du site, sans barre finale. Le build utilise `RENDER_EXTERNAL_URL` si cette variable est disponible. Sans URL publique, ces éléments sont omis pour éviter de pointer les moteurs de recherche vers un mauvais domaine.
+
 Les observations, la modération et les imports restent accessibles depuis le site privé qui conserve la base D1. Publier un nouveau catalogue sur Render passe par une mise à jour du code source suivie d’un build.

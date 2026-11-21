@@ -63,8 +63,8 @@ function Home({entries}:{entries:Entry[]}){
   return <>
     <section className="hero"><div className="shell hero-content">
       <div className="eyebrow"><span/> COMPAGNON COMMUNAUTAIRE FRANCOPHONE</div>
-      <h1>Prépare ton prochain<br/><em>braquage.</em></h1>
-      <p>Les clés, les gains et les stratégies de ROB RUN.<br className="desktop"/> Tout pour préparer ta prochaine sortie à Looty Bay.</p>
+      <h1>ROB RUN : le wiki<br/><em>des braquages.</em></h1>
+      <p>Wiki francophone de Rob Run (Robrun) : clés, braquages, outils, gains et stratégies.<br className="desktop"/> Tout pour préparer ta prochaine sortie à Looty Bay.</p>
       <div className="buttons"><a className="button primary" href="/wiki"><BookOpen size={17}/> Explorer le wiki</a><a className="button secondary" href="/calculateurs"><Calculator size={17}/> Calculer mes gains</a></div>
     </div><div className="shell hero-location"><MapPin size={15}/> LOOTY BAY</div></section>
     <div className="shell home-body">

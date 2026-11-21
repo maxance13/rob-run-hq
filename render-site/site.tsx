@@ -4,12 +4,12 @@ import {progressionCatalog} from "../lib/progression";
 
 const privateSite = "https://rob-run-hq.maxatimer.chatgpt.site";
 const pages: Record<string, {title:string; description:string}> = {
-  accueil:{title:"ROB RUN HQ",description:"Wiki, calculateurs, clés et stratégies pour ROB RUN."},
-  wiki:{title:"Wiki",description:"Retrouve les braquages, les clés et le matériel de Looty Bay."},
-  calculateurs:{title:"Calculateurs",description:"Estime la rentabilité, la part par joueur et les chances de drop de tes braquages."},
-  strategies:{title:"Stratégies",description:"Compare les mini-forets, les points USB et les points de tablette par braquage."},
-  "braquages-cles":{title:"Braquages à clé violette ou dorée",description:"Recherche les 17 accès violets et dorés, avec le matériel et les points par accès."},
-  observations:{title:"Observations",description:"Accède aux observations de drop sur le site privé de ROB RUN HQ."}
+  accueil:{title:"Rob Run : wiki, clés et guides de braquage | ROB RUN HQ",description:"Wiki francophone de Rob Run (Robrun) : braquages, clés, Looty Bay, mini-forets, outils USB, stratégies et calculateurs de gains."},
+  wiki:{title:"Wiki Rob Run : braquages, clés, outils et lieux",description:"Explore le wiki Rob Run : banque de Looty Bay, galerie d’art, commissariat, clés, cartes d’accès, mini-foret et autres objets du jeu."},
+  calculateurs:{title:"Calculateur Rob Run : gains et rentabilité des braquages",description:"Calcule tes gains nets, ta part par joueur et les chances de drop pour préparer tes braquages dans Rob Run."},
+  strategies:{title:"Stratégies Rob Run : guides de braquages",description:"Prépare tes braquages Rob Run : mini-forets, points USB, tablettes de code, accès et butin à Looty Bay."},
+  "braquages-cles":{title:"Clés violettes et dorées Rob Run : accès aux braquages",description:"Retrouve les accès à clé violette ou dorée de Rob Run, le matériel nécessaire et les points gagnés dans chaque salle."},
+  observations:{title:"Observations de drop Rob Run",description:"Consulte les relevés communautaires de drop de Rob Run et contribue depuis l’espace privé de ROB RUN HQ."}
 };
 
 export const paths = [
@@ -27,9 +27,9 @@ function route(path:string) {
 export function getMetadata(path:string) {
   const {page,slug}=route(path);
   const entry=page==="wiki" && progressionCatalog.entries.find(item=>item.slug===slug);
-  const metadata=entry?{title:entry.name,description:entry.description}:pages[page];
+  const metadata=entry?{title:`${entry.name} | Wiki Rob Run`,description:`${entry.name} dans Rob Run : ${entry.description} Lieu : ${entry.district}.`}:pages[page];
   if (!metadata) return {title:"Page introuvable · ROB RUN HQ",description:"Retrouve les contenus de ROB RUN HQ."};
-  return {...metadata,title:page==="accueil"?metadata.title:metadata.title+" · ROB RUN HQ"};
+  return metadata;
 }
 
 export function PublicSite({path,query={}}:{path:string;query?:Record<string,string>}) {

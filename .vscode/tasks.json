@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Preview ROB RUN public site",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"scripts/preview-render.mjs"
+			],
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}

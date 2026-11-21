@@ -7,6 +7,8 @@ const project=fileURLToPath(new URL("../",import.meta.url));
 const root=join(project,"render-site");
 const dist=join(project,"dist");
 const output=join(dist,"render");
+const siteUrl=(process.env.SEO_SITE_URL||process.env.RENDER_EXTERNAL_URL||"").replace(/\/+$/,"");
+if(siteUrl && !/^https:\/\/[^/]+$/.test(siteUrl)) throw new Error("SEO_SITE_URL doit être une origine HTTPS, sans chemin.");
 const common={configFile:false,root,resolve:{alias:{"@":project}}};
 const escapeHtml=(value)=>value.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
@@ -19,8 +21,24 @@ try {
   const template=await readFile(join(output,"index.html"),"utf8");
   async function writePage(path,file){
     const metadata=getMetadata(path);
+    const missing=path==="/404";
+    const url=siteUrl+(path==="/"?"/":path);
+    const socialImage=siteUrl+"/looty-bay.webp";
+    const structuredData=siteUrl?JSON.stringify({"@context":"https://schema.org","@type":path==="/"?"WebSite":"WebPage",name:metadata.title,url,description:metadata.description,inLanguage:"fr",...(path==="/"?{alternateName:["Rob Run HQ","Robrun HQ"]}:{isPartOf:{"@type":"WebSite",name:"ROB RUN HQ",url:siteUrl+"/"}})}).replace(/</g,"\\u003c"):"";
+    const head=`<title>${escapeHtml(metadata.title)}</title>
+    <meta name="description" content="${escapeHtml(metadata.description)}">
+    ${missing?'<meta name="robots" content="noindex, follow">':siteUrl?`<link rel="canonical" href="${escapeHtml(url)}">`:""}
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:site_name" content="ROB RUN HQ">
+    <meta property="og:title" content="${escapeHtml(metadata.title)}">
+    <meta property="og:description" content="${escapeHtml(metadata.description)}">
+    ${siteUrl?`<meta property="og:url" content="${escapeHtml(url)}">
+    <meta property="og:image" content="${escapeHtml(socialImage)}">
+    <meta name="twitter:card" content="summary_large_image">
+    <script type="application/ld+json">${structuredData}</script>`:""}`;
     const html=template
-      .replace("<title>ROB RUN HQ</title>",()=>`<title>${escapeHtml(metadata.title)}</title>\n    <meta name="description" content="${escapeHtml(metadata.description)}">`)
+      .replace("<title>ROB RUN HQ</title>",()=>head)
       .replace('<div id="root"></div>',()=>`<div id="root" data-path="${escapeHtml(path)}">${render(path)}</div>`);
     await mkdir(dirname(file),{recursive:true});
     await writeFile(file,html);
@@ -29,6 +47,8 @@ try {
     writePage(path,join(output,path.slice(1),"index.html")),
     ...(path==="/"?[]:[writePage(path,join(output,path.slice(1)+".html"))])
   ]),writePage("/404",join(output,"404.html"))]);
+  await writeFile(join(output,"robots.txt"),`User-agent: *\nAllow: /\n${siteUrl?`Sitemap: ${siteUrl}/sitemap.xml\n`:""}`);
+  if(siteUrl) await writeFile(join(output,"sitemap.xml"),`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${paths.map(path=>`  <url><loc>${escapeHtml(siteUrl+(path==="/"?"/":path))}</loc></url>`).join("\n")}\n</urlset>\n`);
   console.log(`${paths.length} routes statiques dans dist/render.`);
 } finally {
   await rm(temporary,{recursive:true,force:true});
