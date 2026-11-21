@@ -20,7 +20,7 @@ export function Heading({icon,title,children}:{icon:ReactNode;title:string;child
   return <div className="page-heading"><div className="feature-icon orange">{icon}</div><h1>{title}</h1><p>{children}</p></div>;
 }
 export function Empty({children}:{children:ReactNode}){return <div className="empty">{children}</div>;}
-export function HQ({page,slug,query,catalog,loggedIn}:{page:string;slug:string;query:Record<string,string>;catalog:Catalog;loggedIn:boolean}){
+export function HQ({page,slug,query,catalog,loggedIn,privateSite}:{page:string;slug:string;query:Record<string,string>;catalog:Catalog;loggedIn:boolean;privateSite?:string}){
   const [term,setTerm]=useState("");
   const [open,setOpen]=useState(false);
   const searchRef=useRef<HTMLInputElement>(null);
@@ -48,10 +48,10 @@ export function HQ({page,slug,query,catalog,loggedIn}:{page:string;slug:string;q
       {page==="strategies"&&<Strategies catalog={catalog}/>}
       {page==="braquages-cles"&&<KeyHeists entries={catalog.entries}/>}
       {page==="calculateurs"&&<Calculators catalog={catalog} query={query}/>}
-      {page==="observations"&&<Observations catalog={catalog} loggedIn={loggedIn}/>}
-      {page==="admin"&&<Admin loggedIn={loggedIn} catalog={catalog}/>}
+      {page==="observations"&&(privateSite?<><Heading icon={<ChartNoAxesColumnIncreasing/>} title="Observations de drop">Les relevés et les contributions sont disponibles dans l’espace privé.</Heading><a className="button primary" href={privateSite+"/observations"}>Ouvrir les observations</a></>:<Observations catalog={catalog} loggedIn={loggedIn}/>)}
+      {page==="admin"&&!privateSite&&<Admin loggedIn={loggedIn} catalog={catalog}/>}
     </main>
-    <footer><div className="shell foot"><a href="/" className="brand"><Crosshair size={19}/><strong>ROB RUN<span> HQ</span></strong></a><p>Compagnon communautaire indépendant · ROB RUN est un jeu de Kefir.</p><a href="/admin/imports">Administration</a></div></footer>
+    <footer><div className="shell foot"><a href="/" className="brand"><Crosshair size={19}/><strong>ROB RUN<span> HQ</span></strong></a><p>Compagnon communautaire indépendant · ROB RUN est un jeu de Kefir.</p><a href={(privateSite??"")+"/admin/imports"}>Administration</a></div></footer>
     {open&&<div className="modal-backdrop" onClick={()=>setOpen(false)}><section role="dialog" aria-modal="true" aria-label="Rechercher dans le wiki" className="search-modal" onClick={e=>e.stopPropagation()}>
       <form action="/wiki"><Search size={20}/><input ref={searchRef} name="q" value={term} onChange={e=>setTerm(e.target.value)} placeholder="Rechercher une clé, un lieu, un braquage…" aria-label="Rechercher dans le wiki"/><button type="button" className="icon-button" aria-label="Fermer" onClick={()=>setOpen(false)}><X size={20}/></button></form>
       <div className="search-results">{hits.map(e=><a key={e.slug} href={"/wiki/"+e.slug}><span>{e.name}</span><small>{e.kind}</small></a>)}{!hits.length&&<p>{term?"Aucune fiche trouvée.":"Saisis un nom, un quartier ou un alias."}</p>}</div>
