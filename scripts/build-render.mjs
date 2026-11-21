@@ -24,7 +24,7 @@ try {
     const missing=path==="/404";
     const url=siteUrl+(path==="/"?"/":path);
     const socialImage=siteUrl+"/looty-bay.webp";
-    const structuredData=siteUrl?JSON.stringify({"@context":"https://schema.org","@type":path==="/"?"WebSite":"WebPage",name:metadata.title,url,description:metadata.description,inLanguage:"fr",...(path==="/"?{alternateName:["Rob Run HQ","Robrun HQ"]}:{isPartOf:{"@type":"WebSite",name:"ROB RUN HQ",url:siteUrl+"/"}})}).replace(/</g,"\\u003c"):"";
+    const structuredData=siteUrl?JSON.stringify({"@context":"https://schema.org","@type":path==="/"?"WebSite":"WebPage",name:metadata.title,url,description:metadata.description,inLanguage:"fr",about:{"@type":"VideoGame",name:"ROB RUN"},...(path==="/"?{alternateName:["Rob Run HQ","Robrun HQ"]}:{isPartOf:{"@type":"WebSite",name:"ROB RUN HQ",url:siteUrl+"/"}})}).replace(/</g,"\\u003c"):"";
     const head=`<title>${escapeHtml(metadata.title)}</title>
     <meta name="description" content="${escapeHtml(metadata.description)}">
     ${missing?'<meta name="robots" content="noindex, follow">':siteUrl?`<link rel="canonical" href="${escapeHtml(url)}">`:""}
@@ -47,6 +47,28 @@ try {
     writePage(path,join(output,path.slice(1),"index.html")),
     ...(path==="/"?[]:[writePage(path,join(output,path.slice(1)+".html"))])
   ]),writePage("/404",join(output,"404.html"))]);
+  const aiLink=(path)=>{
+    const {title,description}=getMetadata(path);
+    return `- [${title}](${siteUrl+path}): ${description}`;
+  };
+  const mainPaths=["/","/wiki","/strategies","/braquages-cles","/calculateurs","/observations"];
+  const wikiPaths=paths.filter(path=>path.startsWith("/wiki/"));
+  await writeFile(join(output,"llms.txt"),[
+    "# ROB RUN HQ",
+    "",
+    "> Wiki francophone indépendant du jeu vidéo ROB RUN (aussi écrit Rob Run ou Robrun), développé par Kefir. Guides communautaires sur les braquages, clés, outils, lieux et gains à Looty Bay.",
+    "",
+    "Les informations sont communautaires et peuvent varier selon la version du jeu. Chaque fiche indique sa source et sa date de revue ; consulter la page liée avant de citer un fait précis. ROB RUN HQ n'est pas un site officiel de Kefir.",
+    "",
+    "## Commencer ici",
+    "",
+    ...mainPaths.map(aiLink),
+    "",
+    "## Fiches du wiki",
+    "",
+    ...wikiPaths.map(aiLink),
+    ""
+  ].join("\n"));
   await writeFile(join(output,"robots.txt"),`User-agent: *\nAllow: /\n${siteUrl?`Sitemap: ${siteUrl}/sitemap.xml\n`:""}`);
   if(siteUrl) await writeFile(join(output,"sitemap.xml"),`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${paths.map(path=>`  <url><loc>${escapeHtml(siteUrl+(path==="/"?"/":path))}</loc></url>`).join("\n")}\n</urlset>\n`);
   console.log(`${paths.length} routes statiques dans dist/render.`);
