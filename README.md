@@ -12,7 +12,7 @@ node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1
 
 ## Édition
 
-Le site commence en accès privé. Le propriétaire active son rôle dans `/admin/imports`, ce qui verrouille les actions éditoriales à son identifiant. Effectuer cette activation tant que l’audience est privée avant toute éventuelle ouverture. Pour mettre les données à jour, charger le catalogue actif, éditer son JSON, vérifier les écarts, enregistrer le brouillon, puis le publier. Une révision antérieure peut être réactivée depuis l’historique. Les API de consultation et de simulation ne requièrent pas de compte côté application. L’accès au site privé reste géré par son hébergeur.
+Configurer le secret serveur `HQ_ADMIN_EMAIL` avec l’adresse du compte propriétaire. Le propriétaire connecté active ensuite son rôle dans `/admin/imports`. Les opérations éditoriales exigent son adresse vérifiée et son identifiant de site associé. Pour mettre les données à jour, charger le catalogue actif, éditer son JSON, vérifier les écarts, enregistrer le brouillon, puis le publier. Une révision antérieure peut être réactivée depuis l’historique. Les API de consultation et de simulation ne requièrent pas de compte côté application. L’accès au site privé reste géré par son hébergeur.
 
 Le corpus initial utilise des sources publiques communautaires. La version exacte vérifiée des fiches et les taux serveur restent inconnus. La collecte est ouverte pour le build Steam documenté dans l’interface. Les justificatifs photo, les imports CSV directs et la synchronisation avec une base externe ne sont pas configurés.
 

@@ -1,5 +1,5 @@
 import {z} from "zod";
-import {actor,audit,currentCatalog,db,isEditor,sha} from "@/db/store";
+import {actor,audit,currentCatalog,db,isEditor,isSiteOwner,sha} from "@/db/store";
 import {containers,initial,lootTargets,search,supportedBuild,types,type Catalog} from "@/lib/catalog";
 import {progressionCatalog} from "@/lib/progression";
 import {blank,profit,scenarioKeys,wilson,type Scenario} from "@/lib/calculations";
@@ -75,6 +75,7 @@ export async function GET(req: Request) {
   }
   if (route==="admin") {
     if (!user) return invalid("Connexion nécessaire.",401);
+    if (!isSiteOwner(req)) return invalid("Accès éditeur requis.",403);
     const editor = await isEditor(user);
     if (!editor) {
       const provisioned=await db().prepare("SELECT 1 AS active FROM settings WHERE key='editor'").first();
@@ -132,8 +133,8 @@ export async function POST(req: Request) {
     }
     return json({id,status:"pending"},201);
   }
+  if (route.startsWith("admin/") && !isSiteOwner(req)) return invalid("Accès éditeur requis.",403);
   if (route==="admin/setup") {
-    // Initial activation is served only to the owner by the private Sites audience.
     await db().prepare("INSERT OR IGNORE INTO settings VALUES ('editor', ?)").bind(user).run();
     return (await isEditor(user)) ? json({ok:true}) : invalid("Accès éditeur requis.",403);
   }

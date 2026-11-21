@@ -33,6 +33,11 @@ export async function sha(value: string) {
   return Array.from(new Uint8Array(bytes), b=>b.toString(16).padStart(2,"0")).join("");
 }
 export function actor(req: Request) {return req.headers.get("oai-authenticated-user-id");}
+export function isSiteOwner(req: Request) {
+  const owner = env.HQ_ADMIN_EMAIL?.trim().toLowerCase();
+  const email = req.headers.get("oai-authenticated-user-email")?.trim().toLowerCase();
+  return Boolean(actor(req) && owner && email === owner);
+}
 export async function isEditor(user: string | null) {
   if (!user) return false;
   return user === await db().prepare("SELECT value FROM settings WHERE key = 'editor'").first<string>("value");
